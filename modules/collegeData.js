@@ -1,120 +1,84 @@
+var fs = require('fs');
+let dataCollection = null;
+
 class Data {
     constructor(students, courses) {
         this.students = students
         this.courses = courses
     }
-}
 
-var dataCollection = null
+   
+    initialize() {
+        var sdata;
+        var cdata;
 
-const fs = require('fs');
-const { resolve } = require('path');
-
-filename = '../data/students.json';
-type = 'utf8';
-
-function initializeStudent() {
-    return new Promise(function(resolve, reject){
-      fs.readFile('../data/students.json', type, (err, data) => {
-            if(err) {
+        return new Promise(function(resolve, reject){
+            try {
+                const data = fs.readFileSync('./data/students.json', 'utf8');
+                sdata = JSON.parse(data)
+            } catch (err) {
                 reject(err)
             }
-            else {
-                let sdata = JSON.parse(data)
-                resolve(sdata);
-            }
-      });
-    })
-  }
-
-  function initializeCourse() {
-    return new Promise(function(resolve, reject){
-      fs.readFile('../data/courses.json', type, (err, data) => {
-            if(err) {
+    
+            try {
+                const data = fs.readFileSync('./data/courses.json', 'utf8');
+                cdata = JSON.parse(data)
+            } catch(err) {
                 reject(err)
             }
-            else {
-                let cdata = JSON.parse(data)
-                resolve(cdata);
+
+            dataCollection = new Data(sdata,cdata)
+
+            resolve(dataCollection)
+
+            console.log(sdata)
+        });
+    }
+
+    
+
+    getAllStudents(students) {
+        return new Promise (function(resolve, reject) {
+            if (students.length == null) {
+                reject("No results returned")
+            } else {
+                resolve("Retreived " + students.length + " records")
             }
-      });
-    })
-  }
+        })
+    };
 
-//   console.log(this.sdata)
+    getCourses(courses) {
+        return new Promise (function(resolve, reject) {
+            if (courses.length == null) {
+                reject("No results returned")
+            } else {
+                resolve("Retreived " + courses.length + " records")
+            }
+        })
+    }
 
-// initialize = new Promise(function(resolve, reject){
-//     fs.readFile('../data/students.json', 'utf8', function(err, courseData){
-//         if (err){
-//             // console.log(err); // or reject the promise (if used in a promise)
-//             reject;
-//         }
-//         else {
-//             resolve;
-//             let sdata = JSON.parse(courseData); // convert the JSON from the file into an array of objects
-//             // console.log(sdata);
-//         }
-//     });
-// })
+    getTAs(students){
+        return new Promise(function(resolve, reject){
+                
+            if (students.length > 0) {
+                let taStudents = [];
+                students.forEach(element => {
+                    if(element.TA){
+                        taStudents.push(element);
+                    }
+                });
 
-// initialize.then(console.log(courseData), console.log(err))
-// function initialize() {
+                if(taStudents.length <= 0 ){
+                    reject("There are no TA true in student");
+                }
+             
+                resolve(taStudents);
 
-//     fs.readFile('../data/students.json', 'utf8', function(err, courseData){
-//         if (err){
-//             console.log(err); // or reject the promise (if used in a promise)
-//             return; // exit the function
-//         }
-        
-//         let data = JSON.parse(courseData); // convert the JSON from the file into an array of objects
-//         // console.log(data);
-//     });
-
-//     fs.readFile('../data/courses.json', 'utf8', function(err, coursesData){
-//         if (err){
-//             console.log(err); // or reject the promise (if used in a promise)
-//             return; // exit the function
-//         }
-        
-//         let data = JSON.parse(coursesData); // convert the JSON from the file into an array of objects
-//         // console.log(data);
-//     });
-
-// }
-
-// initialize();
-
-function getAllStudents() {
-    initializeStudent().then(data => {
-        courseData = data
-        console.log(courseData)
-    })
-
-    return new promise ((resolve, reject) => {
-        if (courseData == null) {
-            reject("No results returned")
-        } else {
-            resolve("Student data retreived " + courseData)
-        }
-    })
-};
-
-function getTAs() {
-
+            } else {
+                reject("There are no students");
+            }
+          });
+      }
 }
 
-function getCourses() {
-    initializeStudent().then(data => {
-        courseData = data
-        console.log(courseData)
-    })
-
-    return new promise ((resolve, reject) => {
-        if (courseData == null) {
-            reject("No results returned")
-        } else {
-            resolve("Course data retreived " + courseData)
-        }
-    })
-}
-module.exports = {initialize, getAllStudents, getCourses}
+module.exports = Data
