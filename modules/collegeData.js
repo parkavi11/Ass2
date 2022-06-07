@@ -42,7 +42,7 @@ class Data {
             if (students.length == null) {
                 reject("No results returned")
             } else {
-                resolve("Retreived " + students.length + " records")
+                resolve(students)
             }
         })
     };
@@ -52,7 +52,7 @@ class Data {
             if (courses.length == null) {
                 reject("No results returned")
             } else {
-                resolve("Retreived " + courses.length + " records")
+                resolve(courses)
             }
         })
     }
